@@ -24,6 +24,7 @@ namespace GraduationTracker
                         if (requirement.Courses[k] == student.Courses[j].Id)
                         {
                             average += student.Courses[j].Mark;
+                            //Courses that are equal to min Mark do not count as a credit, Was this intentional?
                             if (student.Courses[j].Mark > requirement.MinimumMark)
                             {
                                 credits += requirement.Credits;
@@ -32,7 +33,7 @@ namespace GraduationTracker
                     }
                 }
             }
-
+            
             average = average / student.Courses.Length;
 
             var standing = STANDING.None;
@@ -45,6 +46,11 @@ namespace GraduationTracker
                 standing = STANDING.MagnaCumLaude;
             else
                 standing = STANDING.MagnaCumLaude;
+
+            //I'm not sure if this was intentional but it seems like the credits are never validated.
+            //I've added the validation here.
+            if (diploma.Credits > credits)
+                return new Tuple<bool, STANDING>(false, standing);
 
             switch (standing)
             {

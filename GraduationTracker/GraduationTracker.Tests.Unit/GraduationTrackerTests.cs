@@ -12,77 +12,33 @@ namespace GraduationTracker.Tests.Unit
         public void TestHasCredits()
         {
             var tracker = new GraduationTracker();
+            Tuple<bool, STANDING> result;
 
-            var diploma = new Diploma
-            {
-                Id = 1,
-                Credits = 4,
-                Requirements = new int[] { 100, 102, 103, 104 }
-            };
+            //I'm going to assume that we know the students in the Repository and which ones
+            //have the criteria to graduate before hand. Otherwise we will have no way of validating
+            //the results of the tested function.
 
-            var students = new[]
-            {
-               new Student
-               {
-                   Id = 1,
-                   Courses = new Course[]
-                   {
-                        new Course{Id = 1, Name = "Math", Mark=95 },
-                        new Course{Id = 2, Name = "Science", Mark=95 },
-                        new Course{Id = 3, Name = "Literature", Mark=95 },
-                        new Course{Id = 4, Name = "Physichal Education", Mark=95 }
-                   }
-               },
-               new Student
-               {
-                   Id = 2,
-                   Courses = new Course[]
-                   {
-                        new Course{Id = 1, Name = "Math", Mark=80 },
-                        new Course{Id = 2, Name = "Science", Mark=80 },
-                        new Course{Id = 3, Name = "Literature", Mark=80 },
-                        new Course{Id = 4, Name = "Physichal Education", Mark=80 }
-                   }
-               },
-            new Student
-            {
-                Id = 3,
-                Courses = new Course[]
-                {
-                    new Course{Id = 1, Name = "Math", Mark=50 },
-                    new Course{Id = 2, Name = "Science", Mark=50 },
-                    new Course{Id = 3, Name = "Literature", Mark=50 },
-                    new Course{Id = 4, Name = "Physichal Education", Mark=50 }
-                }
-            },
-            new Student
-            {
-                Id = 4,
-                Courses = new Course[]
-                {
-                    new Course{Id = 1, Name = "Math", Mark=40 },
-                    new Course{Id = 2, Name = "Science", Mark=40 },
-                    new Course{Id = 3, Name = "Literature", Mark=40 },
-                    new Course{Id = 4, Name = "Physichal Education", Mark=40 }
-                }
-            }
+            //Student ID 1 - Has an average of 95 - Will Graduate MagnaCumLaude      
+            result = tracker.HasGraduated(Repository.GetDiploma(1), Repository.GetStudent(1));
+            Assert.IsTrue(result.Item1);
+            Assert.AreEqual(result.Item2, STANDING.MagnaCumLaude);
 
+            //Student ID 2 - Has an average of 80 - Will Graduate *
+            //According to the code it will be MagnaCumLaude but seems like SumaCumLaude isn't used.
+            result = tracker.HasGraduated(Repository.GetDiploma(1), Repository.GetStudent(2));
+            Assert.IsTrue(result.Item1);
+            Assert.AreEqual(result.Item2, STANDING.MagnaCumLaude);
 
-            //tracker.HasGraduated()
-        };
-            
-            var graduated = new List<Tuple<bool, STANDING>>();
+            //Student ID 3 - Has an average of 50 - Will Not Graduate
+            result = tracker.HasGraduated(Repository.GetDiploma(1), Repository.GetStudent(3));
+            Assert.IsFalse(result.Item1);
+            Assert.AreEqual(result.Item2, STANDING.Average);
 
-            foreach(var student in students)
-            {
-                graduated.Add(tracker.HasGraduated(diploma, student));      
-            }
-
-            
-            Assert.IsFalse(graduated.Any());
-
+            //Student ID 4 - Has an average of 40 - Will Not Graduate
+            result = tracker.HasGraduated(Repository.GetDiploma(1), Repository.GetStudent(4));
+            Assert.IsFalse(result.Item1);
+            Assert.AreEqual(result.Item2, STANDING.Remedial);
         }
-
 
     }
 }
